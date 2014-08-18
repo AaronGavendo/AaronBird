@@ -21,7 +21,6 @@ var obstacles; //Obstacle Object
 //Keyboard Controls
 var spaceKey;
 var escKey;
-var cKey;
 //Used in placement randomness. 
 var obstaclePlacement; 
 //Used for mod calculations
@@ -29,7 +28,7 @@ var mod;
 //Used for count calculations
 var count = 0;
 //Menu
-var menu = [ "main menu", "credits", "game" ];
+var menu = [ "main menu", "game" ];
 var menuText;
 //Prevents double actions
 var jumpTime = 0;
@@ -101,18 +100,11 @@ function update() {
 	{
 		if (spaceKey.isDown)
 		{
-			menu.state = menu[2];//Starts Game
+			menu.state = menu[1];//Starts Game
 			//score text
 			menuText.setText("");
-			scoreText = game.add.text(game.world.width / 3, game.world.height / 2, 'score: ' + score, { fontSize: '10px', fill: '#fff' });
+			scoreText = game.add.text(game.world.width / 2, game.world.height / 2, 'Score: ' + score, { fontSize: '10px', fill: '#fff' });
 			player.reset(32, game.world.height / 2);
-		}
-		else if (cKey.isDown)
-		{
-			menu.state = menu[1]; // sets state to credits
-			menuText.setText("");
-			menuText = game.add.text(10, game.world.height / 2,
-				'Audio provided by Alex Beroza and Gregory Weir under creative commons license', { font: '10px ARIAL', fill: '#fff' });
 		}
 		
 	}
@@ -131,17 +123,13 @@ function update() {
 			{
 				continueText.setText("");
 			}
-			//if (topScore != 0)
-			//{
+			if (topScore != 0)
+			{
 				//topScore = 0;
-				//topScoreText.setText("");
-			//}
+				topScoreText.setText("");
+			}
 			menuText.setText(""); //clears text before setting
-			menuText = game.add.text(
-				game.world.width / 6, 
-				game.world.height / 2.25,
-				"Press Space to Play",
-				{ fontSize: '10px', fill: '#fff' });
+			menuText = game.add.text(game.world.width / 2.25, game.world.height / 2.25, "Press Space to Play", { fontSize: '10px', fill: '#fff' });
 			menu.state = menu[0]; // state = Main Menu
 		}
 	}
@@ -225,8 +213,8 @@ function kill() {
 	}
 	
 	//display text
-	topScoreText = game.add.text(game.world.width / 3.7, game.world.height / 1.6, 'top score: ' + topScore, { fontSize: '10px', fill: '#fff' });
-	continueText = game.add.text(game.world.width / 3.5, game.world.height / 1.3, 'continue..?', { fontSize: '10px', fill: '#fff' });
+	topScoreText = game.add.text(game.world.width / 2, game.world.height / 1.6, 'Top Score: ' + topScore, { fontSize: '10px', fill: '#fff' });
+	continueText = game.add.text(game.world.width / 2, game.world.height / 1.3, 'Press ESC to Continue', { fontSize: '10px', fill: '#fff' });
 }
 
 </script>
