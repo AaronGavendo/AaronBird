@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Phaser - Flappy Bird</title>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+	<style type="text/css">
+	body { margin: 0; }
+	</style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(400, 250, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+//VARIABLES
+var player;
+var obstacle;
+var obstacles; //Obstacle Object
+//Keyboard Controls
+var spaceKey;
+var escKey;
+//Used in placement randomness. 
+var obstaclePlacement; 
+//Used for mod calculations
+var mod;
+//Used for count calculations
+var count = 0;
+//Menu
+var menu = [ "main menu", "game" ];
+var menuText;
+//Prevents double actions
+var jumpTime = 0;
+var createObstacleTime = 0;
+//Score variables
+var topScore = 0;
+var score = 0;
+var topScoreText;
+var scoreText;
+var continueText;
+
+//PRELOAD
+function preload() {
+
+game.load.image('obstacle', 'assets/obstacle.png');
+game.load.image('player', 'assets/star.png');
+game.load.image('background', 'assets/background.jpg');
+}
+
+//CREATE
+function create() {
+
+//enable arcade physics
+game.physics.startSystem(Phaser.Physics.ARCADE);
+
+background.add.sprite(0, 0, 'background'); 
+
+//Keyboard Controls
+spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+escKey = game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+
+menuText = game.add.text(
+	game.world.width / 6, 
+	game.world.height / 2.25,
+	"Press Space to Play",
+	{ fontSize: '10px', fill: '#fff' });
+	
+//Start in Main Menu state
+menu.state = menu[0];
+
+//PLAYER
+
+//player sprite
+player = game.add.sprite(32, game.world.height / 2, 'player');
+
+//enable player physics
+game.physics.arcade.ebable(player);
+
+//player physics properties
+player.body.gravity.y = 200;
+
+player.kill();
+
+//OBSTACLES
+obstacles = game.add.group();
+obstacles.enableBody = true;
+obstacles.hasScored = false;
+
+}
+
+function update() {
+
+	//kills player if they overlaps with obstacles
+	game.physics.arcade.overlap(player, obstacles, kill, null, this);
+
+	//menu states
+	if (menu.state == menu[0])
+	{
+		if (spaceKey.isDown)
+		{
+			menu.state = menu[2];//Starts Game
+			//score text
+			menuText.setText("");
+			scoreText = game.add.text(
+				game.world.width / 3,
+				game.world.height / 2,
+				'score: ' + score,
+				{ fontSize: '10px', fill: '#fff' });
+			player.reset(32, game.world.height / 2);
+		}
+	}
+	else
+	{
+		//resets game
+		if(escKey.isDown)
+		{
+			player.kill();
+			obstacles.removeAll();
+			score = 0;
+			scoreText.setText("");
+			
+			//????????????????????????????????????
+			if (continueText != null)
+			{
+				continueText.setText("");
+			}
+			if (topScore != 0)
+			{
+				topScore = 0;
+				topScoreText.setText("");
+			}
+			menuText.setText(""); //clears text before setting
+			menuText = game.add.text(
+				game.world.width / 6, 
+				game.world.height / 2.25,
+				"Press Space to Play",
+				{ fontSize: '10px', fill: '#fff' });
+			menu.state = menu[0]; // state = Main Menu
+		}
+	}
+	
+	if (game.time.now > jumpTime)
+	{
+		if (spaceKey.isDown)
+		{
+			player.body.velocity.y = -100;
+			jumpTime = game.time.now + 175;
+		}
+	}
+	
+	//CREATE OBSTACLES
+	if (player.alive)
+	{
+		if(game.time.now > createObstacleTime)
+		{
+			obstaclePlacement = Math.floor(Math.random() * 160);
+			obstacle = obstacles.create(game.world.width, game.world.height - obstaclePlacement - 200 - 60, 'obstacle');
+			obstacle = obstacles.create(game.world.width, game.world.height = obstaclePlacement , 'obstacle');
+			createObstacleTime = game.time.now + 2000;
+		}
+	}
+	
+	//MOVE OBSTACLES
+	for (var i = 0; i < obstacles.length; i++)
+	{
+		count++;
+		obstacles.getAt(i).body.velocity.x = -100;
+		//destroys obstacles off screen
+		if (obstacles.getAt(i).x < -obstacles.getAt(i).width)
+		{
+			obstacles.getAt(i).destroy();
+		}
+		
+		//if the player hits a specific position x just before an obstacle it will reset the hasScored to false.
+		if(player.world.x >= obstacles.getAt(i).x - 2 && player.world.x <= obstacles.getAt(i).x - 1)
+		{
+			obstacles.hasScored = false;
+		}
+		
+		
+	
+
+
+}
+
+//PLAYER DIES
+function kill() {
+}
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
