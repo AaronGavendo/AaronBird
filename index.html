@@ -178,14 +178,49 @@ function update() {
 			obstacles.hasScored = false;
 		}
 		
-		
+		//if the player hits the x position of the obstacle and if the hasScored is false.
+		//It will increment the score by 1 and make the hasScored true so it will increment once.
+		if(obstacles.getAt(i).x <= player.world.x && !obstacles.hasScored)
+		{
+			obstacles.hasScored = true;
+			score++;
+			scoreText.setText('score: ' + score);
+		}
+	}
 	
-
-
+	//kills player
+	if ((player.x < -25 || player.y < 0 || player.y > game.world.height) && player.alive)
+	{
+		kill();
+	}
+	
+	//continue game
+	if (player.alive == false && menu ++ 2)
+	{
+		if (spaceKey.isDown)
+		{
+			score = 0;
+			scoreText.setText("score: " + score);
+			topScoreText.setText("");
+			continueText.setText("");
+			player.reset(32, game.world.height / 2);
+		}
+	}
 }
 
 //PLAYER DIES
 function kill() {
+
+	player.kill();
+	obstacles.removeAll();
+	if (topScore < score)
+	{
+		topScore = score;
+	}
+	
+	//display text
+	topScoreText = game.add.text(game.world.width / 3.7, game.world.height / 1.6, 'top score: ' + topScore, { fontSize: '10px', fill: '#fff' });
+	continueText = game.add.text(game.world.width / 3.5, game.world.height / 1.3, 'continue..?', { fontSize: '10px', fill: '#fff' });
 }
 
 </script>
