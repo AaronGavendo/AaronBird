@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
 
-var game = new Phaser.Game(400, 250, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(800, 250, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 //VARIABLES
 var player;
@@ -21,6 +21,7 @@ var obstacles; //Obstacle Object
 //Keyboard Controls
 var spaceKey;
 var escKey;
+var cKey;
 //Used in placement randomness. 
 var obstaclePlacement; 
 //Used for mod calculations
@@ -28,7 +29,7 @@ var mod;
 //Used for count calculations
 var count = 0;
 //Menu
-var menu = [ "main menu", "game" ];
+var menu = [ "main menu", "credits", "game" ];
 var menuText;
 //Prevents double actions
 var jumpTime = 0;
@@ -54,11 +55,12 @@ function create() {
 //enable arcade physics
 game.physics.startSystem(Phaser.Physics.ARCADE);
 
-background.add.sprite(0, 0, 'background'); 
+game.add.sprite(0, 0, 'background'); 
 
 //Keyboard Controls
 spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 escKey = game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+cKey = game.input.keyboard.addKey(Phaser.Keyboard.C);
 
 menuText = game.add.text(
 	game.world.width / 6, 
@@ -75,7 +77,7 @@ menu.state = menu[0];
 player = game.add.sprite(32, game.world.height / 2, 'player');
 
 //enable player physics
-game.physics.arcade.ebable(player);
+game.physics.arcade.enable(player);
 
 //player physics properties
 player.body.gravity.y = 200;
@@ -102,13 +104,17 @@ function update() {
 			menu.state = menu[2];//Starts Game
 			//score text
 			menuText.setText("");
-			scoreText = game.add.text(
-				game.world.width / 3,
-				game.world.height / 2,
-				'score: ' + score,
-				{ fontSize: '10px', fill: '#fff' });
+			scoreText = game.add.text(game.world.width / 3, game.world.height / 2, 'score: ' + score, { fontSize: '10px', fill: '#fff' });
 			player.reset(32, game.world.height / 2);
 		}
+		else if (cKey.isDown)
+		{
+			menu.state = menu[1]; // sets state to credits
+			menuText.setText("");
+			menuText = game.add.text(10, game.world.height / 2,
+				'Audio provided by Alex Beroza and Gregory Weir under creative commons license', { font: '10px ARIAL', fill: '#fff' });
+		}
+		
 	}
 	else
 	{
@@ -125,11 +131,11 @@ function update() {
 			{
 				continueText.setText("");
 			}
-			if (topScore != 0)
-			{
-				topScore = 0;
-				topScoreText.setText("");
-			}
+			//if (topScore != 0)
+			//{
+				//topScore = 0;
+				//topScoreText.setText("");
+			//}
 			menuText.setText(""); //clears text before setting
 			menuText = game.add.text(
 				game.world.width / 6, 
@@ -145,7 +151,7 @@ function update() {
 		if (spaceKey.isDown)
 		{
 			player.body.velocity.y = -100;
-			jumpTime = game.time.now + 175;
+			jumpTime = game.time.now + 175; //Time spent jumping
 		}
 	}
 	
@@ -156,7 +162,7 @@ function update() {
 		{
 			obstaclePlacement = Math.floor(Math.random() * 160);
 			obstacle = obstacles.create(game.world.width, game.world.height - obstaclePlacement - 200 - 60, 'obstacle');
-			obstacle = obstacles.create(game.world.width, game.world.height = obstaclePlacement , 'obstacle');
+			obstacle = obstacles.create(game.world.width, game.world.height - obstaclePlacement , 'obstacle');
 			createObstacleTime = game.time.now + 2000;
 		}
 	}
@@ -195,7 +201,7 @@ function update() {
 	}
 	
 	//continue game
-	if (player.alive == false && menu ++ 2)
+	if (player.alive == false && menu == 2)
 	{
 		if (spaceKey.isDown)
 		{
